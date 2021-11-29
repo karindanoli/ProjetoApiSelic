@@ -1,0 +1,3 @@
+br\com\ibm\SelicIntegrationTest.class
+br\com\ibm\controller\SelicControllerTest.class
+br\com\ibm\service\JavaSelicApplicationTests.class

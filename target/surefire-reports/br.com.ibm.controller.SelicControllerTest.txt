@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: br.com.ibm.controller.SelicControllerTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 25.311 s - in br.com.ibm.controller.SelicControllerTest

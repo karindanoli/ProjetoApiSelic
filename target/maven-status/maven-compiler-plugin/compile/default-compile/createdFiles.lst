@@ -1,0 +1,9 @@
+br\com\ibm\integration\client\SelicFeignClient.class
+br\com\ibm\service\SelicServiceImpl.class
+br\com\ibm\repositories\SelicRepository.class
+br\com\ibm\controller\SelicController.class
+br\com\ibm\dto\SelicRequest.class
+br\com\ibm\entities\SelicEntity.class
+br\com\ibm\JavaSelicApplication.class
+br\com\ibm\swagger\SwaggerConfig.class
+br\com\ibm\service\SelicService.class

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SelicController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ProjetoSelic</a> &gt; <a href="index.source.html" class="el_package">br.com.ibm.controller</a> &gt; <span class="el_source">SelicController.java</span></div><h1>SelicController.java</h1><pre class="source lang-java linenums">package br.com.ibm.controller;
+
+
+import br.com.ibm.dto.SelicRequest;
+import br.com.ibm.entities.SelicEntity;
+import io.swagger.annotations.ApiOperation;
+import javassist.NotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import br.com.ibm.service.SelicService;
+
+import java.io.IOException;
+
+import java.util.List;
+
+
+@RestController
+@RequestMapping(&quot;/v1/selic&quot;)
+<span class="fc" id="L23">public class SelicController {</span>
+
+
+   @Autowired
+    private SelicService selicService;
+
+    @ApiOperation(value = &quot;Este request lê os dados de datas e valores das taxas Selic. Também gera um banco de dados no repositório H2.&quot;)
+    @PostMapping(&quot;/save&quot;)
+    @ResponseStatus(HttpStatus.CREATED)
+    public List&lt;SelicRequest&gt; salvarSelic() {
+
+<span class="fc" id="L34">        return selicService.saveSelic();</span>
+    }
+
+    @ApiOperation(value = &quot;Este request retorna os valores da taxa Selic por ano.&quot;)
+    @GetMapping(&quot;/{ano}&quot;)
+
+    public Double getSelicByYear(@PathVariable(&quot;ano&quot;) int ano) {
+<span class="nc" id="L41">        return selicService.getSelicByYear(ano);</span>
+    }
+
+    @ApiOperation(value = &quot;Este request retorna todos os dados contidos na API(mês, ano e valor)&quot;)
+    @GetMapping(&quot;/selic&quot;)
+    public ResponseEntity&lt;List&lt;SelicEntity&gt;&gt; buscaSelic() throws NotFoundException {
+<span class="nc" id="L47">        List&lt;SelicEntity&gt; list = selicService.getAllSelic();</span>
+<span class="nc" id="L48">        return new ResponseEntity&lt;List&lt;SelicEntity&gt;&gt;(list , HttpStatus.OK);</span>
+    }
+    @ApiOperation(value = &quot;Este request atualiza os dados de mês, ano e valor&quot;)
+    @PatchMapping(&quot;/atualizarselic&quot;)
+    public SelicEntity atualizar(@RequestParam(&quot;mes&quot;)int mes,
+                                 @RequestParam(&quot;ano&quot;)int ano,
+                                 @RequestParam(&quot;valor&quot;) Double valor
+                                 ) throws IOException {
+<span class="nc" id="L56">        return selicService.updateSelic(mes,ano,valor);</span>
+    }
+
+    @ApiOperation(value = &quot;Este request deleta os valores mês, ano e valor daquele código serie específico.&quot;)
+    @DeleteMapping(&quot;/deletar&quot;)
+    public String deleteSelic(@RequestParam(&quot;codigo_Serie&quot;) int codigo_Serie, final RedirectAttributes redirectAttributes)
+    {
+        try
+        {
+<span class="nc" id="L65">            selicService.deleteSelic(codigo_Serie);</span>
+        }
+<span class="nc" id="L67">        catch(Exception ex)</span>
+        {
+<span class="nc" id="L69">            throw ex;</span>
+<span class="nc" id="L70">        }</span>
+        //redirectAttributes.addFlashAttribute(&quot;mensagemSucesso&quot;, &quot;Valor do mês selecionado removido com sucesso&quot;);
+<span class="nc" id="L72">        return (&quot;Valores do código série &quot; + codigo_Serie + &quot; removido com sucesso&quot;);</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

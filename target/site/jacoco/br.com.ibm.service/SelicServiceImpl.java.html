@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pt"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SelicServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">ProjetoSelic</a> &gt; <a href="index.source.html" class="el_package">br.com.ibm.service</a> &gt; <span class="el_source">SelicServiceImpl.java</span></div><h1>SelicServiceImpl.java</h1><pre class="source lang-java linenums">package br.com.ibm.service;
+
+import br.com.ibm.dto.SelicRequest;
+import br.com.ibm.entities.SelicEntity;
+import br.com.ibm.integration.client.SelicFeignClient;
+import br.com.ibm.repositories.SelicRepository;
+import io.swagger.annotations.ApiOperation;
+import javassist.NotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+// este pega do api e guarda no repository
+
+
+//@Override
+//getTaxabyYear
+//colocar o metodo pro ano
+
+@Service
+<span class="nc" id="L28">public class SelicServiceImpl implements SelicService{</span>
+
+    @Autowired
+    private SelicRepository repository;
+
+    @Autowired
+    private SelicFeignClient selicFeignClient;
+
+
+    @Override
+    public List&lt;SelicRequest&gt; saveSelic() {//consome os dados que foram enviados pela api
+        //pega os dados do client pra salvar no repository via jpa
+
+<span class="nc" id="L41">        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(&quot;dd/MM/yyyy&quot;);</span>
+
+<span class="nc" id="L43">        List&lt;SelicRequest&gt; selicRequest = selicFeignClient.onbordingDadosSelic();</span>
+<span class="nc" id="L44">        selicRequest.forEach(taxaSelicRequest1 -&gt; {LocalDate transformacaoDeData = LocalDate.parse(String.valueOf(taxaSelicRequest1.getData()), dtf);</span>
+<span class="nc" id="L45">            Double transformacaoDeValor = Double.parseDouble(String.valueOf(taxaSelicRequest1.getValor()));</span>
+
+<span class="nc" id="L47">            SelicEntity dadosSelicEntity = new SelicEntity();</span>
+<span class="nc" id="L48">            dadosSelicEntity.setData(transformacaoDeData);</span>
+<span class="nc" id="L49">            dadosSelicEntity.setValor(transformacaoDeValor);</span>
+<span class="nc" id="L50">            repository.save(dadosSelicEntity);</span>
+
+<span class="nc" id="L52">        });</span>
+<span class="nc" id="L53">        return selicRequest;</span>
+    }
+
+
+
+
+
+    @Override
+    public Double getSelicByYear(int ano) {
+
+<span class="nc" id="L63">        List&lt;SelicEntity&gt; yearEntities = repository.findAll();</span>
+
+<span class="nc" id="L65">        Double resposta =</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">                yearEntities.stream().filter(taxaSelic -&gt; taxaSelic.getData().getYear() == ano)</span>
+<span class="nc" id="L67">                        .map(taxaSelic -&gt; taxaSelic.getValor())</span>
+<span class="nc" id="L68">                        .reduce(0.0, Double::sum);</span>
+<span class="nc" id="L69">        return resposta;</span>
+    }
+    //resposta.stream().filter(selicEntity -&gt; selicEntity.getInterestRate()).reduce(0,(a,b) -&gt; a+b)
+
+
+    @Override
+    public void deleteSelic (int codigo_Serie){
+<span class="nc" id="L76">        List&lt;SelicEntity&gt; yearEntities = repository.findAll();</span>
+
+<span class="nc" id="L78">        List&lt;SelicEntity&gt; resposta = yearEntities.stream()</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">                .filter(selicEntity -&gt; selicEntity.getCodigo_Serie() == codigo_Serie)</span>
+<span class="nc" id="L80">                .collect(Collectors.toList());</span>
+
+<span class="nc" id="L82">        resposta.forEach(selicEntity -&gt;</span>
+<span class="nc" id="L83">                repository.deleteById(selicEntity.getCodigo_Serie()));</span>
+
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        if (resposta.isEmpty()) {</span>
+<span class="nc" id="L86">            throw new IndexOutOfBoundsException(&quot;Código série não encontrado&quot;);</span>
+        }
+<span class="nc" id="L88">    }</span>
+
+
+    @Override
+    public SelicEntity updateSelic (int mes, int ano, Double valor) throws IOException{
+<span class="nc" id="L93">        List&lt;SelicEntity&gt; yearEntities = repository.findAll();</span>
+<span class="nc" id="L94">        Optional&lt;SelicEntity&gt; respostaOptional = yearEntities.stream()</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">                .filter(selicEntity -&gt; selicEntity.getData().getYear() == ano)</span>
+<span class="nc bnc" id="L96" title="All 2 branches missed.">                .filter(selicEntity -&gt; selicEntity.getData().getMonth() == Month.of(mes))</span>
+<span class="nc" id="L97">                .findFirst();</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        if(!respostaOptional.isPresent()){throw new IOException(&quot;NÃO ENCONTRADO&quot;);</span>
+        }
+<span class="nc" id="L100">        SelicEntity resposta = respostaOptional.get();</span>
+
+<span class="nc" id="L102">        resposta.setValor(valor);</span>
+        //para validar se existe ou nao existe usamos o respostaoptional
+
+<span class="nc" id="L105">        return repository.save(resposta);</span>
+    }
+
+    @Override
+    public List&lt;SelicEntity&gt; getAllSelic() throws NotFoundException {
+
+<span class="nc" id="L111">        List&lt;SelicEntity&gt; allSelic = repository.findAll();</span>
+
+<span class="nc bnc" id="L113" title="All 2 branches missed.">        if (allSelic.isEmpty()) {</span>
+<span class="nc" id="L114">            throw new NotFoundException(&quot;Não há registros desta data.&quot;);</span>
+        }
+<span class="nc" id="L116">        return allSelic;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>
