@@ -13,29 +13,29 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
 @EnableSwagger2
-<span class="fc" id="L16">public class SwaggerConfig {</span>
+<span class="nc" id="L16">public class SwaggerConfig {</span>
 
-        @Bean
-        public Docket api() {
-<span class="fc" id="L20">            return new Docket(DocumentationType.SWAGGER_2)</span>
-<span class="fc" id="L21">                    .select()</span>
-<span class="fc" id="L22">                    .apis(RequestHandlerSelectors.any())</span>
-<span class="fc" id="L23">                    .paths(PathSelectors.any())</span>
-<span class="fc" id="L24">                    .build()</span>
-<span class="fc" id="L25">                    .apiInfo(metaData());</span>
-        }
-
-        private ApiInfo metaData() {
-<span class="fc" id="L29">            return new ApiInfoBuilder()</span>
-<span class="fc" id="L30">                    .title(&quot;Projeto Selic - Java, Spring, H2 &quot;)</span>
-<span class="fc" id="L31">                    .description(&quot;\&quot;Desenvolvido por - Karin de Oliveira\&quot;&quot;)</span>
-<span class="fc" id="L32">                    .version(&quot;1.0.0&quot;)</span>
-<span class="fc" id="L33">                    .license(&quot;Apache License Version 2.0&quot;)</span>
-<span class="fc" id="L34">                    .licenseUrl(&quot;https://www.apache.org/licenses/LICENSE-2.0\&quot;&quot;)</span>
-<span class="fc" id="L35">                    .build();</span>
-        }
-
-
+    @Bean
+    public Docket api() {
+<span class="nc" id="L20">        return new Docket(DocumentationType.SWAGGER_2)</span>
+<span class="nc" id="L21">                .select()</span>
+<span class="nc" id="L22">                .apis(RequestHandlerSelectors.any())</span>
+<span class="nc" id="L23">                .paths(PathSelectors.any())</span>
+<span class="nc" id="L24">                .build()</span>
+<span class="nc" id="L25">                .apiInfo(metaData());</span>
     }
+
+    private ApiInfo metaData() {
+<span class="nc" id="L29">        return new ApiInfoBuilder()</span>
+<span class="nc" id="L30">                .title(&quot;Projeto Selic Itaú - Java, Spring, H2 &quot;)</span>
+<span class="nc" id="L31">                .description(&quot;\&quot;Desenvolvido por - Karin de Oliveira\&quot;&quot;)</span>
+<span class="nc" id="L32">                .version(&quot;1.0.0&quot;)</span>
+<span class="nc" id="L33">                .license(&quot;Apache License Version 2.0&quot;)</span>
+<span class="nc" id="L34">                .licenseUrl(&quot;https://www.apache.org/licenses/LICENSE-2.0\&quot;&quot;)</span>
+<span class="nc" id="L35">                .build();</span>
+    }
+
+
+}
 
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

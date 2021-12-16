@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
+import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 //colocar o metodo pro ano
 
 @Service
-<span class="nc" id="L28">public class SelicServiceImpl implements SelicService{</span>
+<span class="nc" id="L29">public class SelicServiceImpl implements SelicService{</span>
 
     @Autowired
     private SelicRepository repository;
@@ -38,82 +39,112 @@ import java.util.stream.Collectors;
     public List&lt;SelicRequest&gt; saveSelic() {//consome os dados que foram enviados pela api
         //pega os dados do client pra salvar no repository via jpa
 
-<span class="nc" id="L41">        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(&quot;dd/MM/yyyy&quot;);</span>
+<span class="nc" id="L42">        DateTimeFormatter dtf = DateTimeFormatter.ofPattern(&quot;dd/MM/yyyy&quot;);</span>
 
-<span class="nc" id="L43">        List&lt;SelicRequest&gt; selicRequest = selicFeignClient.onbordingDadosSelic();</span>
-<span class="nc" id="L44">        selicRequest.forEach(taxaSelicRequest1 -&gt; {LocalDate transformacaoDeData = LocalDate.parse(String.valueOf(taxaSelicRequest1.getData()), dtf);</span>
-<span class="nc" id="L45">            Double transformacaoDeValor = Double.parseDouble(String.valueOf(taxaSelicRequest1.getValor()));</span>
+<span class="nc" id="L44">        List&lt;SelicRequest&gt; selicRequest = selicFeignClient.onbordingDadosSelic();</span>
+<span class="nc" id="L45">        selicRequest.forEach(taxaSelicRequest1 -&gt; {LocalDate transformacaoDeData = LocalDate.parse(String.valueOf(taxaSelicRequest1.getData()), dtf);</span>
+<span class="nc" id="L46">            Double transformacaoDeValor = Double.parseDouble(String.valueOf(taxaSelicRequest1.getValor()));</span>
 
-<span class="nc" id="L47">            SelicEntity dadosSelicEntity = new SelicEntity();</span>
-<span class="nc" id="L48">            dadosSelicEntity.setData(transformacaoDeData);</span>
-<span class="nc" id="L49">            dadosSelicEntity.setValor(transformacaoDeValor);</span>
-<span class="nc" id="L50">            repository.save(dadosSelicEntity);</span>
+<span class="nc" id="L48">            SelicEntity dadosSelicEntity = new SelicEntity();</span>
+<span class="nc" id="L49">            dadosSelicEntity.setData(transformacaoDeData);</span>
+<span class="nc" id="L50">            dadosSelicEntity.setValor(transformacaoDeValor);</span>
+<span class="nc" id="L51">            repository.save(dadosSelicEntity);</span>
 
-<span class="nc" id="L52">        });</span>
-<span class="nc" id="L53">        return selicRequest;</span>
+<span class="nc" id="L53">        });</span>
+<span class="nc" id="L54">        return selicRequest;</span>
     }
-
-
-
-
 
     @Override
     public Double getSelicByYear(int ano) {
 
-<span class="nc" id="L63">        List&lt;SelicEntity&gt; yearEntities = repository.findAll();</span>
+<span class="nc" id="L60">        List&lt;SelicEntity&gt; yearEntities = repository.findAll();</span>
 
-<span class="nc" id="L65">        Double resposta =</span>
-<span class="nc bnc" id="L66" title="All 2 branches missed.">                yearEntities.stream().filter(taxaSelic -&gt; taxaSelic.getData().getYear() == ano)</span>
-<span class="nc" id="L67">                        .map(taxaSelic -&gt; taxaSelic.getValor())</span>
-<span class="nc" id="L68">                        .reduce(0.0, Double::sum);</span>
-<span class="nc" id="L69">        return resposta;</span>
+<span class="nc" id="L62">        Double resposta =</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">                yearEntities.stream().filter(taxaSelic -&gt; taxaSelic.getData().getYear() == ano)</span>
+<span class="nc" id="L64">                        .map(taxaSelic -&gt; taxaSelic.getValor())</span>
+<span class="nc" id="L65">                        .reduce(0.0, Double::sum);</span>
+<span class="nc" id="L66">        return resposta;</span>
     }
-    //resposta.stream().filter(selicEntity -&gt; selicEntity.getInterestRate()).reduce(0,(a,b) -&gt; a+b)
-
-
-    @Override
-    public void deleteSelic (int codigo_Serie){
-<span class="nc" id="L76">        List&lt;SelicEntity&gt; yearEntities = repository.findAll();</span>
-
-<span class="nc" id="L78">        List&lt;SelicEntity&gt; resposta = yearEntities.stream()</span>
-<span class="nc bnc" id="L79" title="All 2 branches missed.">                .filter(selicEntity -&gt; selicEntity.getCodigo_Serie() == codigo_Serie)</span>
-<span class="nc" id="L80">                .collect(Collectors.toList());</span>
-
-<span class="nc" id="L82">        resposta.forEach(selicEntity -&gt;</span>
-<span class="nc" id="L83">                repository.deleteById(selicEntity.getCodigo_Serie()));</span>
-
-<span class="nc bnc" id="L85" title="All 2 branches missed.">        if (resposta.isEmpty()) {</span>
-<span class="nc" id="L86">            throw new IndexOutOfBoundsException(&quot;Código série não encontrado&quot;);</span>
-        }
-<span class="nc" id="L88">    }</span>
-
-
-    @Override
-    public SelicEntity updateSelic (int mes, int ano, Double valor) throws IOException{
-<span class="nc" id="L93">        List&lt;SelicEntity&gt; yearEntities = repository.findAll();</span>
-<span class="nc" id="L94">        Optional&lt;SelicEntity&gt; respostaOptional = yearEntities.stream()</span>
-<span class="nc bnc" id="L95" title="All 2 branches missed.">                .filter(selicEntity -&gt; selicEntity.getData().getYear() == ano)</span>
-<span class="nc bnc" id="L96" title="All 2 branches missed.">                .filter(selicEntity -&gt; selicEntity.getData().getMonth() == Month.of(mes))</span>
-<span class="nc" id="L97">                .findFirst();</span>
-<span class="nc bnc" id="L98" title="All 2 branches missed.">        if(!respostaOptional.isPresent()){throw new IOException(&quot;NÃO ENCONTRADO&quot;);</span>
-        }
-<span class="nc" id="L100">        SelicEntity resposta = respostaOptional.get();</span>
-
-<span class="nc" id="L102">        resposta.setValor(valor);</span>
-        //para validar se existe ou nao existe usamos o respostaoptional
-
-<span class="nc" id="L105">        return repository.save(resposta);</span>
-    }
-
     @Override
     public List&lt;SelicEntity&gt; getAllSelic() throws NotFoundException {
 
-<span class="nc" id="L111">        List&lt;SelicEntity&gt; allSelic = repository.findAll();</span>
+<span class="nc" id="L71">        List&lt;SelicEntity&gt; allSelic = repository.findAll();</span>
 
-<span class="nc bnc" id="L113" title="All 2 branches missed.">        if (allSelic.isEmpty()) {</span>
-<span class="nc" id="L114">            throw new NotFoundException(&quot;Não há registros desta data.&quot;);</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        if (allSelic.isEmpty()) {</span>
+<span class="nc" id="L74">            throw new NotFoundException(&quot;Não há registros desta data.&quot;);</span>
         }
-<span class="nc" id="L116">        return allSelic;</span>
+<span class="nc" id="L76">        return allSelic;</span>
     }
+
+    @Override
+    public SelicEntity updateSelic (int mes, int ano, Double valor) throws IOException{
+<span class="nc" id="L81">        List&lt;SelicEntity&gt; yearEntities = repository.findAll();</span>
+<span class="nc" id="L82">        Optional&lt;SelicEntity&gt; respostaOptional = yearEntities.stream()</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">                .filter(selicEntity -&gt; selicEntity.getData().getYear() == ano)</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">                .filter(selicEntity -&gt; selicEntity.getData().getMonth() == Month.of(mes))</span>
+<span class="nc" id="L85">                .findFirst();</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        if(!respostaOptional.isPresent()){throw new IOException(&quot;NÃO ENCONTRADO&quot;);</span>
+        }
+<span class="nc" id="L88">        SelicEntity resposta = respostaOptional.get();</span>
+
+<span class="nc" id="L90">        resposta.setValor(valor);</span>
+        //para validar se existe ou nao existe usamos o respostaoptional
+
+<span class="nc" id="L93">        return repository.save(resposta);</span>
+    }
+
+    @Override
+    public void deleteSelic (int codigo_Serie){
+<span class="nc" id="L98">        List&lt;SelicEntity&gt; yearEntities = repository.findAll();</span>
+
+<span class="nc" id="L100">        List&lt;SelicEntity&gt; resposta = yearEntities.stream()</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">                .filter(selicEntity -&gt; selicEntity.getCodigo_Serie() == codigo_Serie)</span>
+<span class="nc" id="L102">                .collect(Collectors.toList());</span>
+
+<span class="nc" id="L104">        resposta.forEach(selicEntity -&gt;</span>
+<span class="nc" id="L105">                repository.deleteById(selicEntity.getCodigo_Serie()));</span>
+
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        if (resposta.isEmpty()) {</span>
+<span class="nc" id="L108">            throw new IndexOutOfBoundsException(&quot;Código série não encontrado&quot;);</span>
+        }
+<span class="nc" id="L110">    }</span>
+
+    @Override
+    public Double getSelicByYearMax(int ano) {
+
+<span class="nc" id="L115">        List&lt;SelicEntity&gt; yearEntities = repository.findAll();</span>
+
+<span class="nc" id="L117">        Double resposta =</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">                yearEntities.stream().filter(taxaSelic -&gt; taxaSelic.getData().getYear() == ano)</span>
+<span class="nc" id="L119">                        .map(taxaSelic -&gt; taxaSelic.getValor())</span>
+<span class="nc" id="L120">                        .reduce(0.0, Double::max);</span>
+
+<span class="nc" id="L122">        return resposta;</span>
+    }
+    @Override
+    public DoubleSummaryStatistics getSelicByYearStatistics(int ano) {
+
+<span class="nc" id="L127">        List&lt;SelicEntity&gt; yearEntities = repository.findAll();</span>
+
+<span class="nc bnc" id="L129" title="All 2 branches missed.">        return yearEntities.stream().filter(taxaSelic -&gt; taxaSelic.getData().getYear() == ano)</span>
+<span class="nc" id="L130">                .mapToDouble(taxaSelic -&gt; taxaSelic.getValor()).summaryStatistics();</span>
+    }
+
+    @Override
+    public Double getSelicByYearMedia(int ano) {
+
+<span class="nc" id="L136">        List&lt;SelicEntity&gt; yearEntities = repository.findAll();</span>
+
+<span class="nc" id="L138">        Double resposta =</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">                yearEntities.stream().filter(taxaSelic -&gt; taxaSelic.getData().getYear() == ano)</span>
+<span class="nc" id="L140">                        .mapToDouble(taxaSelic -&gt; taxaSelic.getValor()).average().getAsDouble();</span>
+
+
+<span class="nc" id="L143">        return resposta;</span>
+    }
+
+
+
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.5.201910111838</span></div></body></html>

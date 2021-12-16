@@ -15,12 +15,13 @@ import br.com.ibm.service.SelicService;
 
 import java.io.IOException;
 
+import java.util.DoubleSummaryStatistics;
 import java.util.List;
 
 
 @RestController
 @RequestMapping(&quot;/v1/selic&quot;)
-<span class="fc" id="L23">public class SelicController {</span>
+<span class="nc" id="L24">public class SelicController {</span>
 
 
    @Autowired
@@ -31,16 +32,15 @@ import java.util.List;
     @ResponseStatus(HttpStatus.CREATED)
     public List&lt;SelicRequest&gt; salvarSelic() {
 
-<span class="fc" id="L34">        return selicService.saveSelic();</span>
+<span class="nc" id="L35">        return selicService.saveSelic();</span>
     }
 
     @ApiOperation(value = &quot;Este request retorna os valores da taxa Selic por ano.&quot;)
     @GetMapping(&quot;/{ano}&quot;)
 
     public Double getSelicByYear(@PathVariable(&quot;ano&quot;) int ano) {
-<span class="nc" id="L41">        return selicService.getSelicByYear(ano);</span>
+<span class="nc" id="L42">        return selicService.getSelicByYear(ano);</span>
     }
-
     @ApiOperation(value = &quot;Este request retorna todos os dados contidos na API(mês, ano e valor)&quot;)
     @GetMapping(&quot;/selic&quot;)
     public ResponseEntity&lt;List&lt;SelicEntity&gt;&gt; buscaSelic() throws NotFoundException {
@@ -52,7 +52,7 @@ import java.util.List;
     public SelicEntity atualizar(@RequestParam(&quot;mes&quot;)int mes,
                                  @RequestParam(&quot;ano&quot;)int ano,
                                  @RequestParam(&quot;valor&quot;) Double valor
-                                 ) throws IOException {
+    ) throws IOException {
 <span class="nc" id="L56">        return selicService.updateSelic(mes,ano,valor);</span>
     }
 
@@ -70,6 +70,26 @@ import java.util.List;
 <span class="nc" id="L70">        }</span>
         //redirectAttributes.addFlashAttribute(&quot;mensagemSucesso&quot;, &quot;Valor do mês selecionado removido com sucesso&quot;);
 <span class="nc" id="L72">        return (&quot;Valores do código série &quot; + codigo_Serie + &quot; removido com sucesso&quot;);</span>
+    }
+
+    @ApiOperation(value = &quot;Este request retorna o maior valor da taxa Selic do ano em questão.&quot;)
+    @GetMapping(&quot;/max/{ano}&quot;)
+
+    public Double getSelicByYearMax(@PathVariable(&quot;ano&quot;) int ano) {
+<span class="nc" id="L79">        return selicService.getSelicByYearMax(ano);</span>
+    }
+
+    @ApiOperation(value = &quot;Este request retorna soma,media,maximo e minimo da taxa Selic por ano.&quot;)
+    @GetMapping(&quot;/summary/{ano}&quot;)
+    public DoubleSummaryStatistics getSelicByYearStatistics(@PathVariable(&quot;ano&quot;) int ano) {
+<span class="nc" id="L85">        return selicService.getSelicByYearStatistics(ano);</span>
+    }
+
+    @ApiOperation(value = &quot;Este request retorna o valor médio da taxa Selic do ano em questão.&quot;)
+    @GetMapping(&quot;/media/{ano}&quot;)
+
+    public Double getSelicByYearMedia(@PathVariable(&quot;ano&quot;) int ano) {
+<span class="nc" id="L92">        return selicService.getSelicByYearMedia(ano);</span>
     }
 
 

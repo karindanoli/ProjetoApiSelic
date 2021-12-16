@@ -21,6 +21,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.apache.http.HttpStatus.SC_ACCEPTED;
+import static org.apache.http.HttpStatus.SC_OK;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
     @SpringBootTest
@@ -58,6 +62,54 @@ import static org.mockito.Mockito.when;
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(selicRequest)))
                     .andExpect(MockMvcResultMatchers.status().is(201)).andReturn();
+
+            Assert.assertNotNull(resposta);
+        }
+
+        @Test
+        public void updateComSucesso() throws Exception {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
+
+            int mes = 06;
+            int ano = 1986;
+            Double valor = 1.25;
+            SelicEntity dadosSelicEntity = new SelicEntity();
+
+            dadosSelicEntity.setValor(valor);
+            dadosSelicEntity.setData(LocalDate.parse("01/06/1986",formatter));
+
+            when(selicService.updateSelic(anyInt(),anyInt(),anyDouble())).thenReturn((dadosSelicEntity));
+
+
+            MvcResult respostaTeste = mockMvc.perform(
+                            MockMvcRequestBuilders.patch
+                                            ("/v1/selic/atualizarselic")
+                                    .param("mes","10")
+                                    .param("ano","1997")
+                                    .param("valor","1.25")
+                                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(MockMvcResultMatchers.status().is(SC_OK)).andReturn();
+
+            Assert.assertNotNull(respostaTeste.getResponse());
+
+        }
+        @Test
+        public void buscarTudo() throws Exception {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/MM/yyyy");
+            Double valor = 1.25;
+            List<SelicEntity> allSelic = new ArrayList<>();
+            SelicEntity dadosSelicEntity = new SelicEntity();
+
+            dadosSelicEntity.setValor(valor);
+            dadosSelicEntity.setData(LocalDate.parse("01/06/1986",formatter));
+            allSelic.add(dadosSelicEntity);
+
+              when(selicService.getAllSelic())
+                    .thenReturn((allSelic));
+
+            MvcResult resposta = mockMvc.perform(MockMvcRequestBuilders.get("/v1/selic/selic")
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(MockMvcResultMatchers.status().is(SC_OK)).andReturn();
 
             Assert.assertNotNull(resposta);
         }
