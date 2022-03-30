@@ -7,10 +7,8 @@ Estes dados são armazenados em um banco de dados H2.
 ---
 ## 👩‍💻 Meta
 
-Desenvolvido por Karin de Oliveira - karindeoliveira@ibm.com.br
+Desenvolvido por Karin de Oliveira 
 
-
-[Git da Karin](https://github.ibm.com/karindeoliveira/ProjetoSelic)
 
 
 ---
